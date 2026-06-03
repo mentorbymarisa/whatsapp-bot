@@ -1,23 +1,24 @@
 const express = require('express');
-const twilio = require('twilio');
 const { handleMessage } = require('./conversation');
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
+  console.log('📩 Incoming webhook hit');
+  console.log('Body:', JSON.stringify(req.body));
+  
   const from = req.body.From;
   const body = req.body.Body;
-  console.log(`📩 Message from ${from}: ${body}`);
+
   try {
     const reply = await handleMessage(from, body);
-    const twiml = new twilio.twiml.MessagingResponse();
-    twiml.message(reply);
-    res.type('text/xml').send(twiml.toString());
+    console.log('📤 Replying:', reply);
+    res.set('Content-Type', 'text/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>${reply}</Message></Response>`);
   } catch (err) {
     console.error('Webhook error:', err);
-    const twiml = new twilio.twiml.MessagingResponse();
-    twiml.message('Sorry, something went wrong. Please try again shortly.');
-    res.type('text/xml').send(twiml.toString());
+    res.set('Content-Type', 'text/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>Sorry, something went wrong. Please try again.</Message></Response>`);
   }
 });
 
