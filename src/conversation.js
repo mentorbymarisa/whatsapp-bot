@@ -52,7 +52,7 @@ async function handleMessage(from, body) {
       await sendEnquiryEmail(finalData, from);
       await sendConfirmationEmail(finalData);
     } catch (err) {
-      console.error('Email error:', err.message);
+      console.error('Email error full:', JSON.stringify(err.response ? err.response.body : err.message));
     }
     return `✅ *Thank you ${finalData.name}!*\n\nI have received your question and will reply to ${finalData.email} within 24 hours.\n\nSpeak soon,\nMarisa 💫`;
   }
