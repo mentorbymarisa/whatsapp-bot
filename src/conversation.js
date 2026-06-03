@@ -49,7 +49,12 @@ async function handleMessage(from, body) {
     const finalData = { ...data, question: text };
     setSession(from, { step: 'done', data: finalData });
     try {
+      console.log('Attempting to send email...');
+      console.log('SENDGRID_KEY starts with:', process.env.SENDGRID_API_KEY ? process.env.SENDGRID_API_KEY.substring(0, 10) : 'NOT SET');
+      console.log('OWNER_EMAIL:', process.env.OWNER_EMAIL);
+      console.log('FROM_EMAIL:', process.env.FROM_EMAIL);
       await sendEnquiryEmail(finalData, from);
+      console.log('Email sent successfully!');
       await sendConfirmationEmail(finalData);
     } catch (err) {
       console.error('Email error full:', JSON.stringify(err.response ? err.response.body : err.message));
